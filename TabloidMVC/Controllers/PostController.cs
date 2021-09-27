@@ -5,6 +5,7 @@ using Microsoft.VisualBasic;
 using System.Security.Claims;
 using TabloidMVC.Models.ViewModels;
 using TabloidMVC.Repositories;
+using System.Linq;
 
 namespace TabloidMVC.Controllers
 {
@@ -24,6 +25,14 @@ namespace TabloidMVC.Controllers
         {
             var posts = _postRepository.GetAllPublishedPosts();
             return View(posts);
+        }
+
+        public IActionResult MyPosts()
+        {
+            var posts = _postRepository.GetAllPublishedPosts();
+            var filteredPosts = posts.Where(post => post.UserProfileId == GetCurrentUserProfileId());
+
+            return View(filteredPosts);
         }
 
         public IActionResult Details(int id)
