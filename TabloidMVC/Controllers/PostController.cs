@@ -5,6 +5,7 @@ using Microsoft.VisualBasic;
 using System.Security.Claims;
 using TabloidMVC.Models.ViewModels;
 using TabloidMVC.Repositories;
+using System;
 using System.Linq;
 
 namespace TabloidMVC.Controllers
@@ -24,7 +25,8 @@ namespace TabloidMVC.Controllers
         public IActionResult Index()
         {
             var posts = _postRepository.GetAllPublishedPosts();
-            return View(posts);
+            var filteredPosts = posts.Where(post => post.PublishDateTime < DateTime.Now);
+            return View(filteredPosts);
         }
 
         public IActionResult MyPosts()
