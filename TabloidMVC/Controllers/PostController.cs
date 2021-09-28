@@ -7,6 +7,7 @@ using TabloidMVC.Models.ViewModels;
 using TabloidMVC.Repositories;
 using System;
 using System.Linq;
+using TabloidMVC.Models;
 
 namespace TabloidMVC.Controllers
 {
@@ -76,6 +77,34 @@ namespace TabloidMVC.Controllers
             {
                 vm.CategoryOptions = _categoryRepository.GetAll();
                 return View(vm);
+            }
+        }
+
+        public IActionResult Delete(int Id)
+        {
+            var post = _postRepository.GetUserPostById(Id, GetCurrentUserProfileId());
+            if (post == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return View(post);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(int id, Post post)
+        {
+            try
+            {
+                _postRepository.Delete(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return RedirectToAction(nameof(Details),id);
             }
         }
 
