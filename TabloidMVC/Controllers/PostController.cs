@@ -108,6 +108,36 @@ namespace TabloidMVC.Controllers
             }
         }
 
+        //GET
+        public IActionResult Edit(int id)
+        {
+            var updatePost = _postRepository.GetUserPostById(id, GetCurrentUserProfileId());
+            if (updatePost.UserProfileId != GetCurrentUserProfileId())
+            {
+                return NotFound();
+            }
+            else
+            {
+                return View(updatePost);
+            }
+        }
+
+        //POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, Post post)
+        {
+            try
+            {
+                _postRepository.Update(post);
+                return RedirectToAction(nameof(Details), new { id = post.Id });
+            }
+            catch
+            {
+                return View(post);
+            }
+        }
+
         private int GetCurrentUserProfileId()
         {
             string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
