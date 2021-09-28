@@ -129,6 +129,7 @@ namespace TabloidMVC.Controllers
         {
             try
             {
+                post.IsApproved = true;
                 _postRepository.Update(post);
                 return RedirectToAction(nameof(Details), new { id = post.Id });
             }
