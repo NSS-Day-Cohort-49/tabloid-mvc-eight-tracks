@@ -155,7 +155,7 @@ namespace TabloidMVC.Repositories
                     cmd.Parameters.AddWithValue("@CreateDateTime", post.CreateDateTime);
                     cmd.Parameters.AddWithValue("@PublishDateTime", DbUtils.ValueOrDBNull(post.PublishDateTime));
                     cmd.Parameters.AddWithValue("@IsApproved", post.IsApproved);
-                    cmd.Parameters.AddWithValue("@CategoryId", post.CategoryId);
+                    cmd.Parameters.AddWithValue("@CategoryId", DbUtils.ValueOrDBNull(post.CategoryId));
                     cmd.Parameters.AddWithValue("@UserProfileId", post.UserProfileId);
 
                     post.Id = (int)cmd.ExecuteScalar();
@@ -210,7 +210,7 @@ namespace TabloidMVC.Repositories
                     cmd.Parameters.AddWithValue("@createDateTime", post.CreateDateTime);
                     cmd.Parameters.AddWithValue("@publishDateTime", DbUtils.ValueOrDBNull(post.PublishDateTime));
                     cmd.Parameters.AddWithValue("@isApproved", post.IsApproved);
-                    cmd.Parameters.AddWithValue("@categoryId", post.CategoryId);
+                    cmd.Parameters.AddWithValue("@categoryId", DbUtils.IntValueOrDBNull(post.CategoryId));
                     cmd.Parameters.AddWithValue("@userProfileId", post.UserProfileId);
                     cmd.Parameters.AddWithValue("@id", post.Id);
 
@@ -221,7 +221,7 @@ namespace TabloidMVC.Repositories
 
         private Post NewPostFromReader(SqlDataReader reader)
         {
-            return new Post()
+            Post post = new Post()
             {
                 Id = reader.GetInt32(reader.GetOrdinal("Id")),
                 Title = reader.GetString(reader.GetOrdinal("Title")),
@@ -229,12 +229,8 @@ namespace TabloidMVC.Repositories
                 ImageLocation = DbUtils.GetNullableString(reader, "HeaderImage"),
                 CreateDateTime = reader.GetDateTime(reader.GetOrdinal("CreateDateTime")),
                 PublishDateTime = DbUtils.GetNullableDateTime(reader, "PublishDateTime"),
-                CategoryId = reader.GetInt32(reader.GetOrdinal("CategoryId")),
-                Category = new Category()
-                {
-                    Id = reader.GetInt32(reader.GetOrdinal("CategoryId")),
-                    Name = reader.GetString(reader.GetOrdinal("CategoryName"))
-                },
+                CategoryId = DbUtils.GetIntOrZero(reader, "CategoryId"),
+               
                 UserProfileId = reader.GetInt32(reader.GetOrdinal("UserProfileId")),
                 UserProfile = new UserProfile()
                 {
@@ -252,7 +248,17 @@ namespace TabloidMVC.Repositories
                         Name = reader.GetString(reader.GetOrdinal("UserTypeName"))
                     }
                 }
+
             };
+            if (!reader.IsDBNull(reader.GetOrdinal("CategoryId")))
+            {
+                post.Category = new Category()
+                {
+                    Id = reader.GetInt32(reader.GetOrdinal("CategoryId")),
+                    Name = reader.GetString(reader.GetOrdinal("CategoryName"))
+                };
+            }
+            return post;
         }
     }
 }

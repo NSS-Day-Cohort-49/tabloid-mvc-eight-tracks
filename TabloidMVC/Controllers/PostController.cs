@@ -8,6 +8,7 @@ using TabloidMVC.Repositories;
 using System;
 using System.Linq;
 using TabloidMVC.Models;
+using System.IO;
 
 namespace TabloidMVC.Controllers
 {
@@ -133,7 +134,7 @@ namespace TabloidMVC.Controllers
                 _postRepository.Update(post);
                 return RedirectToAction(nameof(Details), new { id = post.Id });
             }
-            catch
+            catch (Exception)
             {
                 return View(post);
             }
