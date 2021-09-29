@@ -39,6 +39,40 @@ namespace TabloidMVC.Repositories
                 }
             }
         }
+
+        public Category GetCategoryById(int id)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        SELECT c.[Name], c.Id
+                         FROM Category c
+                        WHERE c.id = @id ";
+
+                    cmd.Parameters.AddWithValue("@id", id);
+                    var reader = cmd.ExecuteReader();
+
+                    Category category = null;
+
+                    if (reader.Read())
+                    {
+                        category = new Category()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Name = reader.GetString(reader.GetOrdinal("Name"))
+                        };
+                    }
+
+                    reader.Close();
+
+                    return category;
+                }
+            }
+        }
+
         public void AddCategory(Category category)
         {
             using (var conn = Connection)
@@ -53,6 +87,29 @@ namespace TabloidMVC.Repositories
                     cmd.Parameters.AddWithValue("@name", category.Name);
                     int id = (int)cmd.ExecuteScalar();
                     category.Id = id;
+                }
+            }
+        }
+
+        public void DeleteCategory(int id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                            UPDATE Post
+                            SET CategoryId = null
+                            WHERE CategoryId = @id;
+
+                            DELETE FROM Category
+                            WHERE Id = @id
+                        ";
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    cmd.ExecuteNonQuery();
                 }
             }
         }

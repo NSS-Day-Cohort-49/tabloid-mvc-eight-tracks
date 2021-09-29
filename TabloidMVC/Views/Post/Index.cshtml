@@ -42,7 +42,14 @@
                         @Html.DisplayFor(modelItem => item.UserProfile.DisplayName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Category.Name)
+                        @if (item.CategoryId != 0)
+                        {
+                            @Html.DisplayFor(modelItem => item.Category.Name)
+                        }
+                        else
+                        {
+                            <text>None</text>;
+                        }
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.PublishDateTime)
